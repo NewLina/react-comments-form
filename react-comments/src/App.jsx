@@ -4,6 +4,7 @@ import {useState} from 'react';
 
 function App() {
     const [inputArray, setInputArray] = useState([]);
+    const [isImage, setImage]=useState(true);
     const [comment, setComment] = useState({
         userName:"",
         userPhoto:"",
@@ -23,12 +24,23 @@ function App() {
             {...comment, [e.target.name] : e.target.value});
     }
 
+    function commentFilter() {
+        const filter = comment.userText.replace(/viagra|XXX/ig, "***");
+        return filter;
+    };
+
     let handleChange = (e) =>{
-        setInputArray(current => [...current, {...comment}]);
+        const text=commentFilter(comment.userText);
+        const name=validateName(comment.userName);
+        setInputArray(current => [...current, {...comment, userName:name, userText:text}]);
         console.log(comment);
         console.log(inputArray);
         e.preventDefault();
         setComment({userName:'', userPhoto:'', userText:''});
+    };
+
+    const setPhoto = (e) => {
+        setImage(e.target.src='https://chpic.su/_data/stickers/k/Ketnipzmoonlight/Ketnipzmoonlight_019.webp?v=1688211001');
     }
 
 
@@ -62,7 +74,7 @@ function App() {
                     </div>
                     <div className="text">
                         <label className="text__label" htmlFor="textInput">Оставьте комментарий</label>
-                        <textarea className="text__input"  value={comment.userText} onChange={onChangeHandler} name="userText" id="textInput" maxLength="800"></textarea>
+                        <textarea className="text__input"  value={isImage? comment.userText: setPhoto} onChange={onChangeHandler} name="userText" id="textInput" maxLength="800"></textarea>
                     </div>
                     <div className="comment-button">
                         <button onClick={handleChange} className="button">Отправить</button>
