@@ -1,14 +1,13 @@
 import './App.scss';
 import {useState} from 'react';
 
-
 function App() {
     const [inputArray, setInputArray] = useState([]);
-    const [isImage, setImage]=useState(true);
     const [comment, setComment] = useState({
         userName:"",
         userPhoto:"",
-        userText:""
+        userText:"",
+        checked: false,
     });
 
     const validateName = () => {
@@ -20,8 +19,9 @@ function App() {
     }
 
     const onChangeHandler = (e) => {
+        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         setComment(
-            {...comment, [e.target.name] : e.target.value});
+            {...comment, [e.target.name] : value});
     }
 
     function commentFilter() {
@@ -32,17 +32,14 @@ function App() {
     let handleChange = (e) =>{
         const text=commentFilter(comment.userText);
         const name=validateName(comment.userName);
-        setInputArray(current => [...current, {...comment, userName:name, userText:text}]);
+        if(!comment.checked){
+        setInputArray(current => [...current, {...comment, userName:'Username', userText:text}]);} else{
+        setInputArray(current => [...current, {...comment, userName:name, userText:text}]);}
         console.log(comment);
         console.log(inputArray);
         e.preventDefault();
         setComment({userName:'', userPhoto:'', userText:''});
     };
-
-    const setPhoto = (e) => {
-        setImage(e.target.src='https://chpic.su/_data/stickers/k/Ketnipzmoonlight/Ketnipzmoonlight_019.webp?v=1688211001');
-    }
-
 
     return (
         <div className="wrapper">
@@ -55,12 +52,7 @@ function App() {
                         <legend className="question__label">Показывать ваше имя?</legend>
                     </div>
                     <div className="agreement__answer">
-                        <input className="answer--1" type="radio" id="yes" name="answer" value="yes" />
-                        <label className="answer-label--1" htmlFor="yes">Да</label>
-                    </div>
-                    <div className="agreement__answer">
-                        <input className="answer--2" type="radio" id="no" name="answer" value="no" />
-                        <label className="answer-label--2" htmlFor="no">Нет</label>
+                        <input onChange={onChangeHandler} className="answer--1" type="checkbox" id="yes" name="checked" checked={comment.checked || ''} />
                     </div>
                 </fieldset>
                 <div className="form__body">
@@ -74,7 +66,7 @@ function App() {
                     </div>
                     <div className="text">
                         <label className="text__label" htmlFor="textInput">Оставьте комментарий</label>
-                        <textarea className="text__input"  value={isImage? comment.userText: setPhoto} onChange={onChangeHandler} name="userText" id="textInput" maxLength="800"></textarea>
+                        <textarea className="text__input"  value={comment.userText} onChange={onChangeHandler} name="userText" id="textInput" maxLength="800"></textarea>
                     </div>
                     <div className="comment-button">
                         <button onClick={handleChange} className="button">Отправить</button>
@@ -89,7 +81,11 @@ function App() {
                             return(
                                 <div key={index} className={index===0? 'chat__comment first-comment' : 'chat__comment'}>
                                     <div className='comment__image'>
-                                        <img className='avatar' src={item.userPhoto} alt="userImage" />
+                                        {item.userPhoto&&
+                                        <img className='avatar' src={item.userPhoto} alt="userImage" />}
+                                        {!item.userPhoto&& 
+                                        <img className='avatar' src='https://chpic.su/_data/stickers/k/Ketnipzmoonlight/Ketnipzmoonlight_031.webp?v=1688211001' alt="userImage" />
+                        }
                                     </div>
                                     <div className='comment__username'>{item.userName}</div>
                                     <div className='comment__content'>{item.userText}</div>
